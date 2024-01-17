@@ -3,6 +3,9 @@ package com.example.braintrainer;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -40,10 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("SetTextI18n")
     public void playAgain(View view){//restarting the game
         score=0;
         numberOfQuestions=0;
-        scoreText.setText(Integer.toString(score) + "/" + Integer.toString(numberOfQuestions));
+        scoreText.setText(score + "/" + numberOfQuestions);
         newQuestion();
         resetGameState("", false);
 
@@ -58,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         return
         new CountDownTimer(timeChange, 1000){   
 
+            @SuppressLint("SetTextI18n")
             @Override
             public void onTick(long millisUntilFinished) {
                 timerMilliseconds =millisUntilFinished;
@@ -71,14 +76,19 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }//create timer
+    @SuppressLint({"SetTextI18n", "DefaultLocale"})
     public void chooseAns(View view) {//user picks answer and the question gets refreshed
         if (Integer.toString(locationOfCorrectAnswer).equals(view.getTag().toString())) {
             status.setText("Correct!");
             score++;
             resetTimer(1000);
+           setBackgroundColor(Color.GREEN);
         } else {
             status.setText("Wrong!");
             resetTimer(-2000);
+            setBackgroundColor(Color.RED);
+
+
         }
         status.setVisibility(View.VISIBLE);
         numberOfQuestions++;
@@ -86,6 +96,16 @@ public class MainActivity extends AppCompatActivity {
         newQuestion();
         double finalPercentageScore=(((score*1.0)/numberOfQuestions)*100);
         percentageScore.setText(String.format("%.2f %% correct answers",finalPercentageScore));
+      if(finalPercentageScore>=90)
+          percentageScore.setBackgroundColor(Color.GREEN);
+        else if(finalPercentageScore>=80)
+            percentageScore.setBackgroundColor(Color.BLUE);
+        else if(finalPercentageScore>=70)
+            percentageScore.setBackgroundColor(Color.YELLOW);
+        else if(finalPercentageScore>=65)
+            percentageScore.setBackgroundColor(Color.parseColor("#FFA500"));
+        else
+            percentageScore.setBackgroundColor(Color.RED);
 
     }//user picks answer and the question gets refreshed
 
@@ -94,7 +114,13 @@ public class MainActivity extends AppCompatActivity {
         countDown= createTimer(timerMilliseconds +change);
         countDown.start();
     }
+    private void setBackgroundColor(int color) {
+        gameLayout.setBackgroundColor(color);
+        gameLayout.postDelayed(() -> {
+            gameLayout.setBackgroundColor(Color.TRANSPARENT);
 
+        }, 100);
+    }
     public void start(View view) {//user presses "GO" button to start the game
 
 
@@ -104,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     }//user presses "GO" button to start the game
 
+    @SuppressLint("SetTextI18n")
     public void newQuestion() {//providing a new question
         Random rand = new Random();
 
@@ -115,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
         a = rand.nextInt(21);
         b = rand.nextInt(21);
-        question.setText(Integer.toString(a) + " + " + Integer.toString(b));
+        question.setText(a + " + " + b);
 
         locationOfCorrectAnswer = rand.nextInt(4);
 
@@ -136,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
         }else{//multiplication
             a = rand.nextInt(21);
             b = rand.nextInt(21);
-            question.setText(Integer.toString(a) + " X " + Integer.toString(b));
+            question.setText(a + " X " + b);
 
             locationOfCorrectAnswer = rand.nextInt(4);
 
